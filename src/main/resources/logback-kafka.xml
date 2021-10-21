@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration  scan="true" scanPeriod="60 seconds" debug="false">
     <springProperty scope="context" name="projectName" source="spring.application.name"/>
+    <springProperty scope="context" name="elk_kafka" source="elk.kafka.url"/>
+    <springProperty scope="context" name="elk_kafka_topic" source="elk.kafka.topic"/>
     <springProperty scope="context" name="env_active" source="spring.profiles.active"/>
     <conversionRule conversionWord="request_id" converterClass="com.lzx.elk.log.sdk.config.RequestIdConfig"/>
 
@@ -13,12 +15,12 @@
             <level>DEBUG</level>
         </filter>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level [%X{userName}:%X{userCode}] %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{requestId}] %contextName [%thread] %-5level [%X{userName}:%X{userCode}] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <!-- Kafka 日志 -->
-    <appender name="KafkaAppender" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+    <appender name="KafkaAppender" class="com.lzx.elk.log.sdk.appender.SdkKafkaAppender">
         <!-- 过滤日志 -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
@@ -28,7 +30,7 @@
                 <pattern>
                     <pattern>
                         {
-                        "request_id": "%request_id",
+                        "request_id": "%X{requestId}",
                         "tags": "info_log",
                         "app_name": "${projectName}-${env_active}",
                         "env": "${env_active}",
@@ -44,20 +46,21 @@
                 </pattern>
             </providers>
         </encoder>
-        <topic>logs</topic>
+        <topic>${elk_kafka_topic}</topic>
         <keyingStrategy class="com.github.danielwegener.logback.kafka.keying.NoKeyKeyingStrategy"/>
         <deliveryStrategy class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy" />
-        <producerConfig>bootstrap.servers=127.0.0.1:9092</producerConfig>
+        <producerConfig>bootstrap.servers=${elk_kafka}</producerConfig>
         <producerConfig>acks=0</producerConfig>
         <producerConfig>linger.ms=1000</producerConfig>
-        <!--   异步发送     -->
-        <producerConfig>producer.type=async</producerConfig>
+        <producerConfig>request.timeout.ms=1000</producerConfig>
+        <producerConfig>metadata.max.age.ms=1000</producerConfig>
+        <producerConfig>retries=3</producerConfig>
     </appender>
 
-<!--    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">-->
-<!--        <appender-ref ref="KafkaAppender" />-->
-<!--        <appender-ref ref="Console" />-->
-<!--    </appender>-->
+    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="KafkaAppender" />
+        <appender-ref ref="Console" />
+    </appender>
 
 
     <!-- 日志输出级别 -->
