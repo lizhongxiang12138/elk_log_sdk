@@ -27,4 +27,8 @@ elk:
   kafka:
     url: 127.0.0.1:9092  #kafka地址
     topic: logs          #主题
+
+spring:
+  zipkin:
+    base-url: http://localhost:9411/  #zipkin地址
 ```
