@@ -24,8 +24,8 @@ public class RequestInterceptor implements ClientHttpRequestInterceptor {
         Tracer tracer = SpringUtil.getBean(Tracer.class);
         TraceContext context = tracer.currentSpan().context();
         headers.add("X-B3-TraceId",String.valueOf(context.traceIdString()));
-        headers.add("X-B3-SpanId", String.valueOf(context.spanIdString()));
-        headers.add("X-B3-ParentSpanId", String.valueOf(context.parentIdString()));
+        headers.add("X-B3-SpanId", String.valueOf(context.spanId()));
+        headers.add("X-B3-ParentSpanId", String.valueOf(context.parentId()));
         headers.add("X-B3-Sampled", context.sampled()?"1":"0");
 
         return execution.execute(request,body);
