@@ -30,9 +30,9 @@
                 <pattern>
                     <pattern>
                         {
-                        "request_id": "%X{requestId}",
+                        "traceid": "%X{requestId}",
                         "tags": "info_log",
-                        "app_name": "${projectName}-${env_active}",
+                        "business": "${projectName}-${env_active}",
                         "env": "${env_active}",
                         "category": "global_app_interface_monitor",
                         "level": "%level",

@@ -7,13 +7,13 @@ elk:
 spring:
 #  zipkin:
 #    base-url: http://localhost:9411/
-  cloud:
-    consul:
-      host: 10.206.0.7
-      port: 8500
-      discovery:
-        instance-id: ${spring.application.name}-${spring.cloud.client.ip-address}-${server.port}
-        prefer-ip-address: true
+#  cloud:
+#    consul:
+#      host: 10.206.0.7
+#      port: 8500
+#      discovery:
+#        instance-id: ${spring.application.name}-${spring.cloud.client.ip-address}-${server.port}
+#        prefer-ip-address: true
 #健康检查info返回内容，默认空对象{}
 #info:
 #  app:
